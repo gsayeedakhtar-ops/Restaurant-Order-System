@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>👨‍🍳 Kitchen Display</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #2c3e50;
+            padding: 20px;
+            color: white;
+        }
+        
+        h1 {
+            text-align: center;
+            margin: 20px 0 30px 0;
+            font-size: 32px;
+            color: #e67e22;
+        }
+        
+        .orders-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .order-card {
+            background: #34495e;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 5px solid #e67e22;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #465c6e;
+        }
+        
+        .order-id {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e67e22;
+        }
+        
+        .order-time {
+            color: #95a5a6;
+            font-size: 14px;
+        }
+        
+        .order-items {
+            margin: 15px 0;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #405b6e;
+        }
+        
+        .item-name {
+            font-size: 16px;
+        }
+        
+        .item-price {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+        
+        .order-total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2ecc71;
+            text-align: right;
+            margin: 15px 0;
+        }
+        
+        .ready-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .ready-btn:hover {
+            background: #219a52;
+        }
+        
+        .ready-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .no-orders {
+            text-align: center;
+            padding: 50px;
+            background: #34495e;
+            border-radius: 12px;
+            grid-column: 1 / -1;
+        }
+        
+        .no-orders h2 {
+            color: #7f8c8d;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <h1>👨‍🍳 Kitchen Orders</h1>
+    
+    <div id="orders-container" class="orders-container">
+        <div class="no-orders">
+            <h2>⏳ Waiting for orders...</h2>
+        </div>
+    </div>
+    
+    <script>
+        function loadOrders() {
+            fetch('/kitchen-orders')
+                .then(response => response.json())
+                .then(orders => {
+                    const container = document.getElementById('orders-container');
+                    
+                    if (Object.keys(orders).length === 0) {
+                        container.innerHTML = `
+                            <div class="no-orders">
+                                <h2>⏳ No pending orders</h2>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    let html = '';
+                    
+                    for (let id in orders) {
+                        const order = orders[id];
+                        const time = new Date(order.timestamp).toLocaleTimeString();
+                        
+                        html += `
+                            <div class="order-card" id="order-${id}">
+                                <div class="order-header">
+                                    <span class="order-id">#${id}</span>
+                                    <span class="order-time">${time}</span>
+                                </div>
+                                <div class="order-items">
+                        `;
+                        
+                        order.items.forEach(item => {
+                            html += `
+                                <div class="order-item">
+                                    <span class="item-name">${item.item}</span>
+                                    <span class="item-price">₹${item.price}</span>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `
+                                </div>
+                                <div class="order-total">
+                                    Total: ₹${order.total}
+                                </div>
+                                <button class="ready-btn" onclick="markReady(${id})">
+                                    ✓ Order Ready
+                                </button>
+                            </div>
+                        `;
+                    }
+                    
+                    container.innerHTML = html;
+                });
+        }
+        
+        function markReady(orderId) {
+            fetch(`/update-status/${orderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({status: 'ready'})
+            })
+            .then(response => response.json())
+            .then(() => {
+                // Remove the order card with animation
+                const orderCard = document.getElementById(`order-${orderId}`);
+                if (orderCard) {
+                    orderCard.style.opacity = '0.5';
+                    orderCard.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        loadOrders(); // Refresh the list
+                    }, 300);
+                }
+            });
+        }
+        
+        // Load orders every 2 seconds
+        setInterval(loadOrders, 2000);
+        
+        // Initial load
+        loadOrders();
+    </script>
+</body>
+</html>

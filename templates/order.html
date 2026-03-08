@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🍕 Restaurant Order System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* Paste the full styles from the previous final version */
+        /* (I've included the compact version below to save space – use the one from my previous final answer) */
+        /* For brevity, I'm using the same styles as before – if you need the full CSS, refer to the earlier message */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8f9fa; padding: 15px; padding-bottom: 100px; }
+        h1 { color: #2c3e50; text-align: center; margin: 20px 0; font-size: 28px; }
+        .category { font-size: 22px; font-weight: bold; color: #e67e22; margin: 20px 0 10px 0; padding-left: 5px; border-left: 5px solid #e67e22; }
+        .menu-item { background: white; margin: 12px 0; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .item-title { font-size: 18px; font-weight: bold; color: #34495e; margin-bottom: 12px; }
+        select, input { width: 100%; padding: 15px; margin: 8px 0; font-size: 16px; border: 2px solid #e0e0e0; border-radius: 8px; background: white; }
+        select:focus, input:focus { outline: none; border-color: #e67e22; }
+        .add-btn { background: #e67e22; color: white; border: none; padding: 15px 20px; font-size: 16px; font-weight: bold; border-radius: 8px; width: 100%; margin-top: 10px; cursor: pointer; transition: background 0.3s; }
+        .add-btn:hover { background: #d35400; }
+        .add-btn:active { transform: scale(0.98); }
+        .order-summary { background: #fff3e0; padding: 20px; border-radius: 12px; margin: 20px 0; border: 2px solid #e67e22; display: none; position: sticky; top: 10px; z-index: 100; }
+        .order-summary h3 { color: #e67e22; margin-bottom: 15px; font-size: 20px; }
+        .order-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ffe0b2; }
+        .order-total { font-size: 20px; font-weight: bold; color: #27ae60; margin-top: 15px; text-align: right; }
+        .place-order-btn { background: #27ae60; color: white; border: none; padding: 18px 20px; font-size: 20px; font-weight: bold; border-radius: 12px; width: 100%; margin-top: 20px; cursor: pointer; box-shadow: 0 4px 6px rgba(39, 174, 96, 0.3); }
+        .place-order-btn:hover { background: #219a52; }
+        .voice-btn { background: #3498db; color: white; border: none; padding: 15px; font-size: 16px; border-radius: 8px; width: 100%; margin: 10px 0; cursor: pointer; }
+        .voice-btn:hover { background: #2980b9; }
+        .notification { position: fixed; top: 20px; right: 20px; background: #27ae60; color: white; padding: 15px 25px; border-radius: 8px; display: none; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        @media (max-width: 480px) { body { padding: 10px; } .menu-item { padding: 15px; } }
+    </style>
+</head>
+<body>
+    <div id="notification" class="notification"></div>
+    <div id="order-summary" class="order-summary" style="display: none;">
+        <h3>📋 Current Order</h3>
+        <div id="order-items"></div>
+        <div class="order-total">Total: ₹<span id="total">0</span></div>
+    </div>
+
+    <h1>🍕 Order Taking System</h1>
+    <button class="voice-btn" onclick="startVoiceInput()">🎤 Speak Your Order</button>
+
+    <div class="category">🍕 PIZZA</div>
+    <div class="menu-item">
+        <div class="item-title">Customize Your Pizza</div>
+        <select id="pizza-size">
+            <option value="Small">Small Pizza - ₹250</option>
+            <option value="Medium">Medium Pizza - ₹300</option>
+            <option value="Large">Large Pizza - ₹350</option>
+        </select>
+        <input type="text" id="pizza-toppings" placeholder="Toppings (e.g., cheese, pepperoni)" value="Cheese">
+        <button class="add-btn" onclick="addPizza()">➕ Add Pizza</button>
+    </div>
+
+    <div class="category">🍔 BURGERS</div>
+    <div class="menu-item">
+        <div class="item-title">Choose Your Burger</div>
+        <select id="burger-type">
+            <option value="Cheese">Cheese Burger - ₹120</option>
+            <option value="Bacon">Bacon Burger - ₹150</option>
+            <option value="Chicken">Chicken Burger - ₹140</option>
+            <option value="Turkey">Turkey Burger - ₹160</option>
+        </select>
+        <button class="add-btn" onclick="addBurger()">➕ Add Burger</button>
+    </div>
+
+    <div class="category">🥪 SANDWICHES</div>
+    <div class="menu-item">
+        <div class="item-title">Choose Your Sandwich</div>
+        <select id="sandwich-type">
+            <option value="Cheese">Cheese Sandwich - ₹100</option>
+            <option value="Bacon">Bacon Sandwich - ₹130</option>
+            <option value="Chicken">Chicken Sandwich - ₹120</option>
+            <option value="Turkey">Turkey Sandwich - ₹140</option>
+        </select>
+        <button class="add-btn" onclick="addSandwich()">➕ Add Sandwich</button>
+    </div>
+
+    <div class="category">🧄 GARLIC BREAD</div>
+    <div class="menu-item">
+        <div class="item-title">Choose Flavor</div>
+        <select id="garlic-flavor">
+            <option value="Garlic">Garlic Bread - ₹80</option>
+            <option value="Onion">Onion Bread - ₹85</option>
+            <option value="Pepper">Pepper Bread - ₹90</option>
+            <option value="Salt">Salt Bread - ₹75</option>
+        </select>
+        <button class="add-btn" onclick="addGarlicBread()">➕ Add Garlic Bread</button>
+    </div>
+
+    <div class="category">🥤 BEVERAGES</div>
+    <div class="menu-item">
+        <div class="item-title">Choose Drink</div>
+        <select id="beverage-type">
+            <option value="Coke">Coke - ₹40</option>
+            <option value="Pepsi">Pepsi - ₹40</option>
+            <option value="Water">Water - ₹20</option>
+            <option value="Juice">Juice - ₹50</option>
+        </select>
+        <button class="add-btn" onclick="addBeverage()">➕ Add Beverage</button>
+    </div>
+
+    <button class="place-order-btn" onclick="placeOrder()">📝 PLACE ORDER</button>
+
+    <script>
+        let currentOrder = [];
+        const prices = {
+            'Small':250,'Medium':300,'Large':350,
+            'Cheese Burger':120,'Bacon Burger':150,'Chicken Burger':140,'Turkey Burger':160,
+            'Cheese Sandwich':100,'Bacon Sandwich':130,'Chicken Sandwich':120,'Turkey Sandwich':140,
+            'Garlic':80,'Onion':85,'Pepper':90,'Salt':75,
+            'Coke':40,'Pepsi':40,'Water':20,'Juice':50
+        };
+
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.backgroundColor = isError ? '#e74c3c' : '#27ae60';
+            notification.style.display = 'block';
+            setTimeout(() => notification.style.display = 'none', 3000);
+        }
+
+        function addPizza() {
+            const size = document.getElementById('pizza-size').value;
+            const toppings = document.getElementById('pizza-toppings').value || 'Cheese';
+            currentOrder.push({ item: `Pizza (${size})`, details: toppings, price: prices[size] });
+            updateSummary();
+            showNotification(`✅ Pizza added (${size})`);
+        }
+
+        function addBurger() {
+            const type = document.getElementById('burger-type').value;
+            currentOrder.push({ item: `${type} Burger`, price: prices[`${type} Burger`] });
+            updateSummary();
+            showNotification(`✅ ${type} Burger added`);
+        }
+
+        function addSandwich() {
+            const type = document.getElementById('sandwich-type').value;
+            currentOrder.push({ item: `${type} Sandwich`, price: prices[`${type} Sandwich`] });
+            updateSummary();
+            showNotification(`✅ ${type} Sandwich added`);
+        }
+
+        function addGarlicBread() {
+            const flavor = document.getElementById('garlic-flavor').value;
+            currentOrder.push({ item: `Garlic Bread (${flavor})`, price: prices[flavor] });
+            updateSummary();
+            showNotification(`✅ Garlic Bread (${flavor}) added`);
+        }
+
+        function addBeverage() {
+            const type = document.getElementById('beverage-type').value;
+            currentOrder.push({ item: type, price: prices[type] });
+            updateSummary();
+            showNotification(`✅ ${type} added`);
+        }
+
+        function updateSummary() {
+            const summaryDiv = document.getElementById('order-summary');
+            const itemsDiv = document.getElementById('order-items');
+            const totalSpan = document.getElementById('total');
+            if (currentOrder.length > 0) {
+                summaryDiv.style.display = 'block';
+                let html = '<h3>📋 Current Order</h3>';
+                let total = 0;
+                currentOrder.forEach(item => {
+                    html += `<div class="order-item"><span>${item.item} ${item.details ? '('+item.details+')' : ''}</span><span>₹${item.price}</span></div>`;
+                    total += item.price;
+                });
+                html += `<div class="order-total">Total: ₹${total}</div>`;
+                itemsDiv.innerHTML = html;
+                totalSpan.textContent = total;
+            } else {
+                summaryDiv.style.display = 'none';
+                itemsDiv.innerHTML = '';
+                totalSpan.textContent = '0';
+            }
+        }
+
+        function placeOrder() {
+            if (currentOrder.length === 0) return showNotification('❌ No items in order', true);
+            fetch('/place-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: currentOrder, total: currentOrder.reduce((s,i)=>s+i.price,0) })
+            })
+            .then(r=>r.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(`✅ Order #${data.order_id} placed!`);
+                    currentOrder = [];
+                    updateSummary();
+                } else showNotification('❌ Error placing order', true);
+            })
+            .catch(() => showNotification('❌ Server error', true));
+        }
+
+        // Voice functions
+        function startVoiceInput() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window))
+                return showNotification('❌ Voice not supported. Use Chrome.', true);
+            showNotification('🎤 Listening...');
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.onresult = (event) => {
+                const text = event.results[0][0].transcript.toLowerCase().trim();
+                showNotification(`You said: "${text}"`);
+                if (!processVoiceCommand(text)) showNotification('❌ Not recognized', true);
+            };
+            recognition.start();
+        }
+
+        function processVoiceCommand(text) {
+            text = text.toLowerCase().trim();
+            const mappings = [
+                // Pizza
+                { keywords: ['small pizza','smol pizza','regular pizza'], action: () => { document.getElementById('pizza-size').value = 'Small'; addPizza(); } },
+                { keywords: ['medium pizza','med pizza','normal pizza'], action: () => { document.getElementById('pizza-size').value = 'Medium'; addPizza(); } },
+                { keywords: ['large pizza','big pizza','family pizza'], action: () => { document.getElementById('pizza-size').value = 'Large'; addPizza(); } },
+                { keywords: ['pizza'], action: () => { document.getElementById('pizza-size').value = 'Medium'; addPizza(); } },
+                // Burgers
+                { keywords: ['cheese burger','cheeseburger'], action: () => { document.getElementById('burger-type').value = 'Cheese'; addBurger(); } },
+                { keywords: ['chicken burger','chickenburger'], action: () => { document.getElementById('burger-type').value = 'Chicken'; addBurger(); } },
+                { keywords: ['bacon burger','baconburger'], action: () => { document.getElementById('burger-type').value = 'Bacon'; addBurger(); } },
+                { keywords: ['turkey burger','turkeyburger'], action: () => { document.getElementById('burger-type').value = 'Turkey'; addBurger(); } },
+                { keywords: ['burger'], action: () => { document.getElementById('burger-type').value = 'Cheese'; addBurger(); } },
+                // Sandwiches
+                { keywords: ['cheese sandwich'], action: () => { document.getElementById('sandwich-type').value = 'Cheese'; addSandwich(); } },
+                { keywords: ['chicken sandwich'], action: () => { document.getElementById('sandwich-type').value = 'Chicken'; addSandwich(); } },
+                { keywords: ['bacon sandwich'], action: () => { document.getElementById('sandwich-type').value = 'Bacon'; addSandwich(); } },
+                { keywords: ['turkey sandwich'], action: () => { document.getElementById('sandwich-type').value = 'Turkey'; addSandwich(); } },
+                { keywords: ['sandwich'], action: () => { document.getElementById('sandwich-type').value = 'Cheese'; addSandwich(); } },
+                // Garlic bread
+                { keywords: ['garlic bread'], action: () => { document.getElementById('garlic-flavor').value = 'Garlic'; addGarlicBread(); } },
+                { keywords: ['onion bread'], action: () => { document.getElementById('garlic-flavor').value = 'Onion'; addGarlicBread(); } },
+                { keywords: ['pepper bread'], action: () => { document.getElementById('garlic-flavor').value = 'Pepper'; addGarlicBread(); } },
+                { keywords: ['salt bread'], action: () => { document.getElementById('garlic-flavor').value = 'Salt'; addGarlicBread(); } },
+                { keywords: ['garlic'], action: () => { document.getElementById('garlic-flavor').value = 'Garlic'; addGarlicBread(); } },
+                // Beverages
+                { keywords: ['coke','cola','coca cola','cocacola'], action: () => { document.getElementById('beverage-type').value = 'Coke'; addBeverage(); } },
+                { keywords: ['pepsi'], action: () => { document.getElementById('beverage-type').value = 'Pepsi'; addBeverage(); } },
+                { keywords: ['water','aqua','paani'], action: () => { document.getElementById('beverage-type').value = 'Water'; addBeverage(); } },
+                { keywords: ['juice','orange juice','apple juice'], action: () => { document.getElementById('beverage-type').value = 'Juice'; addBeverage(); } }
+            ];
+            for (let mapping of mappings) {
+                for (let keyword of mapping.keywords) {
+                    if (text.includes(keyword)) {
+                        console.log(`✅ Matched "${keyword}"`);
+                        mapping.action();
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    </script>
+</body>
+</html>
