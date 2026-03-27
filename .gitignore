@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 echo __pycache__/ > .gitignore
 echo *.pyc >> .gitignore
 echo venv/ >> .gitignore
 echo .env >> .gitignore
+=======
+__pycache__/
+*.pyc
+.env
+.DS_Store
+>>>>>>> 02f34dd67143036ee036b17bbafbd36d3a4c8afc
