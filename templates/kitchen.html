@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rumi's Kitchen</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'DM Sans',sans-serif; background:#0a0a0a; color:#fff; padding:20px; }
+.header { text-align:center; padding:16px; margin-bottom:24px; border-bottom:2px solid #D4A843; }
+.header h1 { color:#D4A843; font-size:28px; }
+.header p  { color:#888; font-size:14px; margin-top:4px; }
+.orders-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
+.order-card { background:#1a1a1a; border-radius:16px; padding:20px; border:2px solid rgba(212,168,67,0.2); }
+.order-card.preparing { border-color:#f39c12; }
+.order-card.ready     { border-color:#27ae60; }
+.order-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.order-num  { font-size:24px; font-weight:700; color:#D4A843; }
+.order-time { font-size:12px; color:#888; }
+.order-item { padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:14px; display:flex; justify-content:space-between; }
+.order-total{ margin-top:12px; font-size:16px; font-weight:700; color:#D4A843; text-align:right; }
+.status-btns { display:flex; gap:8px; margin-top:14px; }
+.status-btn  { flex:1; padding:10px; border:none; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; }
+.btn-preparing { background:#f39c12; color:#000; }
+.btn-ready     { background:#27ae60; color:#fff; }
+.btn-done      { background:#444; color:#fff; }
+.no-orders { text-align:center; color:#444; padding:60px 20px; font-size:18px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>👨‍🍳 Rumi's Kitchen</h1>
+  <p>Live Orders — Auto-refreshes every 8 seconds</p>
+</div>
+<div id="ordersGrid" class="orders-grid">
+  <div class="no-orders">⏳ Waiting for orders...</div>
+</div>
+<script>
+function loadOrders() {
+  fetch('/kitchen-orders')
+    .then(r=>r.json())
+    .then(data => {
+      const grid = document.getElementById('ordersGrid');
+      const ids = Object.keys(data);
+      if (!ids.length) { grid.innerHTML='<div class="no-orders">⏳ Waiting for orders...</div>'; return; }
+      grid.innerHTML = ids.map(id => {
+        const o = data[id];
+        const itemsHtml = o.items.map(i=>`<div class="order-item"><span>${i.item}</span><span>₹${i.price}</span></div>`).join('');
+        return `<div class="order-card ${o.status}" id="card-${id}">
+          <div class="order-header">
+            <div class="order-num">Order #${id}</div>
+            <div class="order-time">${o.timestamp}</div>
+          </div>
+          ${itemsHtml}
+          <div class="order-total">₹${o.total}</div>
+          <div class="status-btns">
+            <button class="status-btn btn-preparing" onclick="setStatus(${id},'preparing')">🔥 Preparing</button>
+            <button class="status-btn btn-ready" onclick="setStatus(${id},'ready')">✅ Ready</button>
+            <button class="status-btn btn-done" onclick="setStatus(${id},'done')">✔ Done</button>
+          </div>
+        </div>`;
+      }).join('');
+    });
+}
+function setStatus(id, status) {
+  fetch(`/update-status/${id}`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({status})
+  }).then(()=>loadOrders());
+}
+loadOrders();
+setInterval(loadOrders, 8000);
+</script>
+</body>
+</html>

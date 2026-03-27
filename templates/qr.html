@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Rumi's QR Code</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family:'DM Sans',sans-serif;
+  background: linear-gradient(135deg, #0e0800, #2d1500, #0e0800);
+  min-height:100vh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:40px 20px;
+}
+.card {
+  background:#1a1a1a;
+  border-radius:24px;
+  padding:40px 36px;
+  text-align:center;
+  border:2px solid rgba(212,168,67,0.3);
+  max-width:380px; width:100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.logo { font-family:'Playfair Display',serif; font-size:36px; color:#D4A843; letter-spacing:2px; }
+.sub  { font-size:11px; color:#888; letter-spacing:4px; text-transform:uppercase; margin-top:4px; }
+.divider { height:1px; background:rgba(212,168,67,0.2); margin:24px 0; }
+.qr-wrap {
+  background:#0E0E0E;
+  border-radius:16px;
+  padding:20px;
+  display:inline-block;
+  border:2px solid rgba(212,168,67,0.2);
+  margin-bottom:20px;
+}
+.qr-wrap img { width:220px; height:220px; }
+.scan-text  { font-size:18px; font-weight:600; color:#F0EDE8; margin-bottom:8px; }
+.scan-sub   { font-size:13px; color:#888; line-height:1.5; }
+.url-box {
+  background:#242424;
+  border:1px solid rgba(212,168,67,0.3);
+  border-radius:10px;
+  padding:10px 16px;
+  margin-top:16px;
+  font-size:13px;
+  color:#D4A843;
+  word-break:break-all;
+  font-family:monospace;
+}
+.steps {
+  text-align:left;
+  margin-top:20px;
+  background:#242424;
+  border-radius:12px;
+  padding:16px;
+}
+.step { font-size:13px; color:#aaa; padding:4px 0; }
+.step span { color:#D4A843; font-weight:600; margin-right:8px; }
+.print-btn {
+  margin-top:20px;
+  background:#D4A843; color:#000;
+  border:none; padding:14px 32px;
+  border-radius:12px; font-size:15px; font-weight:700;
+  cursor:pointer; font-family:'DM Sans',sans-serif;
+  width:100%;
+}
+@media print {
+  .print-btn { display:none; }
+  body { background:#fff; }
+  .card { border:2px solid #D4A843; box-shadow:none; }
+}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">Rumi's</div>
+  <div class="sub">Restaurant &amp; Grill</div>
+  <div class="divider"></div>
+  <div class="qr-wrap">
+    <img src="data:image/png;base64,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" alt="QR Code">
+  </div>
+  <div class="scan-text">📱 Scan to Order</div>
+  <div class="scan-sub">Point your phone camera at this QR code<br>to view the menu and place your order</div>
+  <div class="url-box" id="urlBox">http://YOUR_IP:8080</div>
+  <div class="steps">
+    <div class="step"><span>1.</span>Open camera app on your phone</div>
+    <div class="step"><span>2.</span>Point at the QR code</div>
+    <div class="step"><span>3.</span>Tap the notification that appears</div>
+    <div class="step"><span>4.</span>Browse menu &amp; place your order!</div>
+  </div>
+  <button class="print-btn" onclick="window.print()">🖨️ Print This QR Card</button>
+</div>
+
+<script>
+// Auto-fill the actual URL from the browser
+const currentUrl = window.location.origin;
+if (!currentUrl.includes('file://')) {
+  document.getElementById('urlBox').textContent = currentUrl;
+}
+</script>
+</body>
+</html>

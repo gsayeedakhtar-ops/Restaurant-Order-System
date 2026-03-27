@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Rumi's Restaurant</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #D4A843;
+  --gold-light: #F0C96A;
+  --dark: #0E0E0E;
+  --dark2: #1A1A1A;
+  --dark3: #242424;
+  --card: #1E1E1E;
+  --text: #F0EDE8;
+  --muted: #888;
+  --success: #4CAF50;
+  --danger: #e74c3c;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 120px;
+}
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(135deg, #1a0a00 0%, #2d1500 50%, #1a0a00 100%);
+  padding: 28px 20px 22px;
+  text-align: center;
+  border-bottom: 1px solid rgba(212,168,67,0.3);
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+}
+.header-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  color: var(--gold);
+  letter-spacing: 2px;
+  line-height: 1;
+}
+.header-sub {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.table-badge {
+  display: inline-block;
+  background: rgba(212,168,67,0.15);
+  border: 1px solid rgba(212,168,67,0.4);
+  color: var(--gold);
+  font-size: 12px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-top: 8px;
+  letter-spacing: 1px;
+}
+
+/* ── ORDER CART (sticky top) ── */
+.cart-bar {
+  display: none;
+  background: var(--gold);
+  color: #000;
+  padding: 14px 20px;
+  position: sticky;
+  top: 93px;
+  z-index: 190;
+  cursor: pointer;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 4px 20px rgba(212,168,67,0.3);
+}
+.cart-bar.visible { display: flex; }
+.cart-count {
+  background: #000;
+  color: var(--gold);
+  border-radius: 50%;
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+}
+
+/* ── VOICE BUTTON ── */
+.voice-section {
+  padding: 16px 16px 0;
+}
+.voice-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #1a2a3a, #0d1820);
+  border: 2px solid rgba(212,168,67,0.4);
+  color: var(--text);
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: all 0.3s;
+}
+.voice-btn:hover { border-color: var(--gold); }
+.voice-btn.listening {
+  background: linear-gradient(135deg, #3a0000, #200000);
+  border-color: #e74c3c;
+  animation: voicePulse 1.4s infinite;
+}
+.voice-btn.success { border-color: var(--success); background: linear-gradient(135deg, #003a10, #001a08); }
+@keyframes voicePulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(231,76,60,0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(231,76,60,0); }
+}
+.transcript {
+  margin-top: 8px;
+  background: var(--dark3);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--gold-light);
+  display: none;
+  text-align: center;
+}
+.transcript.show { display: block; }
+
+/* ── CATEGORY NAV ── */
+.cat-nav {
+  display: flex;
+  gap: 8px;
+  padding: 16px 16px 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.cat-nav::-webkit-scrollbar { display: none; }
+.cat-pill {
+  flex-shrink: 0;
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--muted);
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.cat-pill.active, .cat-pill:hover {
+  background: var(--gold);
+  color: #000;
+  border-color: var(--gold);
+  font-weight: 600;
+}
+
+/* ── SECTION HEADER ── */
+.section-header {
+  padding: 24px 16px 12px;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: var(--gold);
+}
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, rgba(212,168,67,0.4), transparent);
+}
+
+/* ── MENU ITEMS ── */
+.items-grid { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+
+.menu-card {
+  background: var(--card);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: transform 0.15s, border-color 0.15s;
+}
+.menu-card:active { transform: scale(0.98); }
+
+.card-body {
+  padding: 14px 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.card-info { flex: 1; }
+.card-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.3;
+}
+.card-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.card-price {
+  font-size: 14px;
+  color: var(--gold);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Size selector */
+.size-selector {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.size-btn {
+  background: var(--dark3);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.size-btn.selected {
+  background: var(--gold);
+  color: #000;
+  border-color: var(--gold);
+  font-weight: 600;
+}
+
+.add-btn {
+  background: var(--gold);
+  border: none;
+  color: #000;
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-weight: 300;
+  transition: transform 0.15s, background 0.15s;
+}
+.add-btn:active { transform: scale(0.9); }
+
+/* ── CART MODAL ── */
+.cart-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 300;
+  backdrop-filter: blur(4px);
+}
+.cart-overlay.open { display: block; }
+.cart-sheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--dark2);
+  border-radius: 24px 24px 0 0;
+  padding: 20px 20px 40px;
+  max-height: 80vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 301;
+}
+.cart-sheet.open { transform: translateY(0); }
+.cart-handle {
+  width: 40px; height: 4px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+.cart-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+.cart-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  gap: 10px;
+}
+.cart-item-name { font-size: 14px; flex: 1; }
+.cart-item-price { color: var(--gold); font-weight: 600; font-size: 14px; }
+.remove-btn {
+  background: rgba(231,76,60,0.15);
+  border: 1px solid rgba(231,76,60,0.3);
+  color: #e74c3c;
+  border-radius: 8px;
+  width: 28px; height: 28px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+.cart-total {
+  margin-top: 16px;
+  display: flex; justify-content: space-between;
+  font-size: 18px; font-weight: 600;
+}
+.cart-total-amount { color: var(--gold); font-size: 22px; }
+.place-btn {
+  width: 100%;
+  background: var(--gold);
+  color: #000;
+  border: none;
+  padding: 18px;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  margin-top: 20px;
+  letter-spacing: 0.5px;
+  transition: transform 0.15s;
+}
+.place-btn:active { transform: scale(0.98); }
+
+/* ── NOTIFICATION ── */
+.notif {
+  position: fixed; top: 110px; left: 50%; transform: translateX(-50%);
+  background: var(--dark3);
+  border: 1px solid rgba(212,168,67,0.4);
+  color: var(--text);
+  padding: 12px 22px;
+  border-radius: 30px;
+  font-size: 14px;
+  z-index: 500;
+  white-space: nowrap;
+  display: none;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  pointer-events: none;
+}
+.notif.show { display: block; animation: slideDown 0.3s ease; }
+.notif.error { border-color: rgba(231,76,60,0.5); color: #ff6b6b; }
+@keyframes slideDown {
+  from { opacity:0; top:90px; }
+  to   { opacity:1; top:110px; }
+}
+
+/* ── SUCCESS SCREEN ── */
+.success-screen {
+  display: none;
+  position: fixed; inset: 0;
+  background: var(--dark);
+  z-index: 600;
+  flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 40px;
+}
+.success-screen.show { display: flex; }
+.success-icon { font-size: 72px; margin-bottom: 20px; animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+.success-title { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--gold); margin-bottom: 10px; }
+.success-sub { color: var(--muted); font-size: 15px; line-height: 1.6; }
+.success-order-id { font-size: 48px; font-weight: 700; color: var(--gold); margin: 20px 0; }
+.new-order-btn {
+  background: var(--gold); color: #000;
+  border: none; padding: 16px 40px;
+  border-radius: 14px; font-size: 16px; font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer; margin-top: 20px;
+}
+
+/* ── SPICE NOTE ── */
+.note-tag {
+  display: inline-block;
+  background: rgba(212,168,67,0.1);
+  border: 1px solid rgba(212,168,67,0.25);
+  color: var(--gold);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+  letter-spacing: 0.5px;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">Rumi's</div>
+  <div class="header-sub">Restaurant &amp; Grill</div>
+  <div class="table-badge">🪑 Dine In · Order Here</div>
+</div>
+
+<!-- CART BAR -->
+<div class="cart-bar" id="cartBar" onclick="openCart()">
+  <span>🛒 View Order</span>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span id="cartBarTotal">₹0</span>
+    <div class="cart-count" id="cartCount">0</div>
+  </div>
+</div>
+
+<!-- VOICE -->
+<div class="voice-section">
+  <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">
+    🎤 <span id="voiceLabel">Tap to speak your order</span>
+  </button>
+  <div class="transcript" id="transcript"></div>
+</div>
+
+<!-- CATEGORY NAV -->
+<div class="cat-nav" id="catNav">
+  <div class="cat-pill active" onclick="scrollTo('salads',this)">🥗 Salads</div>
+  <div class="cat-pill" onclick="scrollTo('starters',this)">🔥 Starters</div>
+  <div class="cat-pill" onclick="scrollTo('biriyani',this)">🍚 Biriyani</div>
+  <div class="cat-pill" onclick="scrollTo('breads',this)">🫓 Breads</div>
+  <div class="cat-pill" onclick="scrollTo('mandi',this)">🍖 Mandi</div>
+  <div class="cat-pill" onclick="scrollTo('rolls',this)">🌯 Rolls</div>
+  <div class="cat-pill" onclick="scrollTo('grill',this)">🔥 Grill</div>
+  <div class="cat-pill" onclick="scrollTo('curries',this)">🍛 Curries</div>
+</div>
+
+<!-- ═══════════ SALADS ═══════════ -->
+<div id="salads">
+  <div class="section-header">
+    <div class="section-title">🥗 Salads</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="items-grid">
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info">
+          <div class="card-name">Green Salad</div>
+          <div class="card-price">₹100</div>
+        </div>
+        <button class="add-btn" onclick="addItem('Green Salad',100)">+</button>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info">
+          <div class="card-name">Mediterranean Salad</div>
+          <div class="card-price">₹170</div>
+        </div>
+        <button class="add-btn" onclick="addItem('Mediterranean Salad',170)">+</button>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info">
+          <div class="card-name">Chicken Mayo Salad</div>
+          <div class="card-price">₹160</div>
+        </div>
+        <button class="add-btn" onclick="addItem('Chicken Mayo Salad',160)">+</button>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info">
+          <div class="card-name">Fruit Salad</div>
+          <div class="card-price">₹140</div>
+        </div>
+        <button class="add-btn" onclick="addItem('Fruit Salad',140)">+</button>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info">
+          <div class="card-name">Russian Salad</div>
+          <div class="card-price">₹200</div>
+        </div>
+        <button class="add-btn" onclick="addItem('Russian Salad',200)">+</button>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info">
+          <div class="card-name">Cheese Salad</div>
+          <div class="card-price">₹249</div>
+        </div>
+        <button class="add-btn" onclick="addItem('Cheese Salad',249)">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ STARTERS ═══════════ -->
+<div id="starters">
+  <div class="section-header">
+    <div class="section-title">🔥 Starters</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="items-grid">
+    <!-- Chicken 65 with size selector -->
+    <div class="menu-card" id="chicken65-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Chicken 65 Boneless <span class="note-tag">SPICY</span></div>
+          <button class="add-btn" onclick="addWithSize('chicken65')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="chicken65" data-size="Full" data-price="600" onclick="selectSize(this,'chicken65')">Full ₹600</button>
+          <button class="size-btn" data-item="chicken65" data-size="Half" data-price="319" onclick="selectSize(this,'chicken65')">Half ₹319</button>
+          <button class="size-btn" data-item="chicken65" data-size="Quarter" data-price="169" onclick="selectSize(this,'chicken65')">Qtr ₹169</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="beefchilli-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Beef Chilli (Bdf)</div>
+          <button class="add-btn" onclick="addWithSize('beefchilli')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="beefchilli" data-size="Full" data-price="579" onclick="selectSize(this,'beefchilli')">Full ₹579</button>
+          <button class="size-btn" data-item="beefchilli" data-size="Half" data-price="289" onclick="selectSize(this,'beefchilli')">Half ₹289</button>
+          <button class="size-btn" data-item="beefchilli" data-size="Quarter" data-price="149" onclick="selectSize(this,'beefchilli')">Qtr ₹149</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="gobi65-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Gobi 65</div>
+          <button class="add-btn" onclick="addWithSize('gobi65')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="gobi65" data-size="Full" data-price="399" onclick="selectSize(this,'gobi65')">Full ₹399</button>
+          <button class="size-btn" data-item="gobi65" data-size="Half" data-price="210" onclick="selectSize(this,'gobi65')">Half ₹210</button>
+          <button class="size-btn" data-item="gobi65" data-size="Quarter" data-price="110" onclick="selectSize(this,'gobi65')">Qtr ₹110</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="paneer65-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Paneer 65</div>
+          <button class="add-btn" onclick="addWithSize('paneer65')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="paneer65" data-size="Full" data-price="500" onclick="selectSize(this,'paneer65')">Full ₹500</button>
+          <button class="size-btn" data-item="paneer65" data-size="Half" data-price="269" onclick="selectSize(this,'paneer65')">Half ₹269</button>
+          <button class="size-btn" data-item="paneer65" data-size="Quarter" data-price="139" onclick="selectSize(this,'paneer65')">Qtr ₹139</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info">
+          <div class="card-name">Chicken Dry Fry</div>
+          <div class="card-price">₹80</div>
+        </div>
+        <button class="add-btn" onclick="addItem('Chicken Dry Fry',80)">+</button>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info">
+          <div class="card-name">Hot Wings</div>
+          <div class="card-desc">10 pieces</div>
+          <div class="card-price">₹199</div>
+        </div>
+        <button class="add-btn" onclick="addItem('Hot Wings (10pc)',199)">+</button>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info">
+          <div class="card-name">Falafel</div>
+          <div class="card-desc">4 pieces</div>
+          <div class="card-price">₹60</div>
+        </div>
+        <button class="add-btn" onclick="addItem('Falafel (4pc)',60)">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ BIRIYANI ═══════════ -->
+<div id="biriyani">
+  <div class="section-header">
+    <div class="section-title">🍚 Biriyani</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="items-grid">
+    <div class="menu-card" id="chickenbiriyani-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Spl Chicken Dum Biriyani</div>
+          <button class="add-btn" onclick="addWithSize('chickenbiriyani')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="chickenbiriyani" data-size="Full" data-price="179" onclick="selectSize(this,'chickenbiriyani')">Full ₹179</button>
+          <button class="size-btn" data-item="chickenbiriyani" data-size="Half" data-price="129" onclick="selectSize(this,'chickenbiriyani')">Half ₹129</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info">
+          <div class="card-name">Spl Buff Biriyani</div>
+          <div class="card-price">₹199</div>
+        </div>
+        <button class="add-btn" onclick="addItem('Spl Buff Biriyani',199)">+</button>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info">
+          <div class="card-name">Ghee Rice Chicken Combo</div>
+          <div class="card-price">₹110</div>
+        </div>
+        <button class="add-btn" onclick="addItem('Ghee Rice Chicken Combo',110)">+</button>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info">
+          <div class="card-name">Ghee Rice Buff Combo</div>
+          <div class="card-price">₹169</div>
+        </div>
+        <button class="add-btn" onclick="addItem('Ghee Rice Buff Combo',169)">+</button>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info">
+          <div class="card-name">Mutton Dum Biriyani</div>
+          <div class="card-price">₹280</div>
+        </div>
+        <button class="add-btn" onclick="addItem('Mutton Dum Biriyani',280)">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ BREADS ═══════════ -->
+<div id="breads">
+  <div class="section-header">
+    <div class="section-title">🫓 Breads</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="items-grid">
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info"><div class="card-name">Kerala Porotta</div><div class="card-price">₹20</div></div>
+        <button class="add-btn" onclick="addItem('Kerala Porotta',20)">+</button>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info"><div class="card-name">Rumali</div><div class="card-price">₹10</div></div>
+        <button class="add-btn" onclick="addItem('Rumali',10)">+</button>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-body">
+        <div class="card-info"><div class="card-name">Tandoori</div><div class="card-price">₹10</div></div>
+        <button class="add-btn" onclick="addItem('Tandoori',10)">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MANDI ═══════════ -->
+<div id="mandi">
+  <div class="section-header">
+    <div class="section-title">🍖 Mandi</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="items-grid">
+    <div class="menu-card" id="mandiAlfaham-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Mandi (Al-faham)</div>
+          <button class="add-btn" onclick="addWithSize('mandiAlfaham')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="mandiAlfaham" data-size="Full" data-price="799" onclick="selectSize(this,'mandiAlfaham')">Full ₹799</button>
+          <button class="size-btn" data-item="mandiAlfaham" data-size="Half" data-price="399" onclick="selectSize(this,'mandiAlfaham')">Half ₹399</button>
+          <button class="size-btn" data-item="mandiAlfaham" data-size="Quarter" data-price="199" onclick="selectSize(this,'mandiAlfaham')">Qtr ₹199</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="mandiShawaya-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Mandi (Shawaya)</div>
+          <button class="add-btn" onclick="addWithSize('mandiShawaya')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="mandiShawaya" data-size="Full" data-price="799" onclick="selectSize(this,'mandiShawaya')">Full ₹799</button>
+          <button class="size-btn" data-item="mandiShawaya" data-size="Half" data-price="399" onclick="selectSize(this,'mandiShawaya')">Half ₹399</button>
+          <button class="size-btn" data-item="mandiShawaya" data-size="Quarter" data-price="199" onclick="selectSize(this,'mandiShawaya')">Qtr ₹199</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="buffMandi-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Buff Mandi</div>
+          <button class="add-btn" onclick="addWithSize('buffMandi')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="buffMandi" data-size="Full" data-price="999" onclick="selectSize(this,'buffMandi')">Full ₹999</button>
+          <button class="size-btn" data-item="buffMandi" data-size="Half" data-price="499" onclick="selectSize(this,'buffMandi')">Half ₹499</button>
+          <button class="size-btn" data-item="buffMandi" data-size="Quarter" data-price="249" onclick="selectSize(this,'buffMandi')">Qtr ₹249</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="muttonMandi-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Mutton Mandi <span class="note-tag">ON ORDER</span></div>
+          <button class="add-btn" onclick="addWithSize('muttonMandi')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="muttonMandi" data-size="Full" data-price="1199" onclick="selectSize(this,'muttonMandi')">Full ₹1199</button>
+          <button class="size-btn" data-item="muttonMandi" data-size="Half" data-price="599" onclick="selectSize(this,'muttonMandi')">Half ₹599</button>
+          <button class="size-btn" data-item="muttonMandi" data-size="Quarter" data-price="299" onclick="selectSize(this,'muttonMandi')">Qtr ₹299</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ ROLLS ═══════════ -->
+<div id="rolls">
+  <div class="section-header">
+    <div class="section-title">🌯 Rolls</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="items-grid">
+    <div class="menu-card"><div class="card-body"><div class="card-info"><div class="card-name">Chicken Shawarma Roll</div><div class="card-price">₹120</div></div><button class="add-btn" onclick="addItem('Chicken Shawarma Roll',120)">+</button></div></div>
+    <div class="menu-card"><div class="card-body"><div class="card-info"><div class="card-name">Shawarma Plate</div><div class="card-price">₹150</div></div><button class="add-btn" onclick="addItem('Shawarma Plate',150)">+</button></div></div>
+    <div class="menu-card"><div class="card-body"><div class="card-info"><div class="card-name">Falafel Roll</div><div class="card-price">₹120</div></div><button class="add-btn" onclick="addItem('Falafel Roll',120)">+</button></div></div>
+    <div class="menu-card"><div class="card-body"><div class="card-info"><div class="card-name">Buff Roll</div><div class="card-price">₹180</div></div><button class="add-btn" onclick="addItem('Buff Roll',180)">+</button></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ RUMI'S GRILL ═══════════ -->
+<div id="grill">
+  <div class="section-header">
+    <div class="section-title">🔥 Rumi's Grill</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="items-grid">
+    <div class="menu-card" id="shawaya-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Shawaya</div>
+          <button class="add-btn" onclick="addWithSize('shawaya')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="shawaya" data-size="Full" data-price="560" onclick="selectSize(this,'shawaya')">Full ₹560</button>
+          <button class="size-btn" data-item="shawaya" data-size="Half" data-price="280" onclick="selectSize(this,'shawaya')">Half ₹280</button>
+          <button class="size-btn" data-item="shawaya" data-size="Quarter" data-price="140" onclick="selectSize(this,'shawaya')">Qtr ₹140</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="masalaShawaya-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Masala Shawaya</div>
+          <button class="add-btn" onclick="addWithSize('masalaShawaya')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="masalaShawaya" data-size="Full" data-price="580" onclick="selectSize(this,'masalaShawaya')">Full ₹580</button>
+          <button class="size-btn" data-item="masalaShawaya" data-size="Half" data-price="290" onclick="selectSize(this,'masalaShawaya')">Half ₹290</button>
+          <button class="size-btn" data-item="masalaShawaya" data-size="Quarter" data-price="150" onclick="selectSize(this,'masalaShawaya')">Qtr ₹150</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="alfaham-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Al-faham</div>
+          <button class="add-btn" onclick="addWithSize('alfaham')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="alfaham" data-size="Full" data-price="499" onclick="selectSize(this,'alfaham')">Full ₹499</button>
+          <button class="size-btn" data-item="alfaham" data-size="Half" data-price="249" onclick="selectSize(this,'alfaham')">Half ₹249</button>
+          <button class="size-btn" data-item="alfaham" data-size="Quarter" data-price="129" onclick="selectSize(this,'alfaham')">Qtr ₹129</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="alfahamPeri-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Al-faham Peri Peri <span class="note-tag">🌶</span></div>
+          <button class="add-btn" onclick="addWithSize('alfahamPeri')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="alfahamPeri" data-size="Full" data-price="560" onclick="selectSize(this,'alfahamPeri')">Full ₹560</button>
+          <button class="size-btn" data-item="alfahamPeri" data-size="Half" data-price="280" onclick="selectSize(this,'alfahamPeri')">Half ₹280</button>
+          <button class="size-btn" data-item="alfahamPeri" data-size="Quarter" data-price="140" onclick="selectSize(this,'alfahamPeri')">Qtr ₹140</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="alfahamTurkish-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Al-faham Turkish</div>
+          <button class="add-btn" onclick="addWithSize('alfahamTurkish')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="alfahamTurkish" data-size="Full" data-price="560" onclick="selectSize(this,'alfahamTurkish')">Full ₹560</button>
+          <button class="size-btn" data-item="alfahamTurkish" data-size="Half" data-price="280" onclick="selectSize(this,'alfahamTurkish')">Half ₹280</button>
+          <button class="size-btn" data-item="alfahamTurkish" data-size="Quarter" data-price="140" onclick="selectSize(this,'alfahamTurkish')">Qtr ₹140</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="alfahamPepper-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Al-faham Pepper</div>
+          <button class="add-btn" onclick="addWithSize('alfahamPepper')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="alfahamPepper" data-size="Full" data-price="560" onclick="selectSize(this,'alfahamPepper')">Full ₹560</button>
+          <button class="size-btn" data-item="alfahamPepper" data-size="Half" data-price="280" onclick="selectSize(this,'alfahamPepper')">Half ₹280</button>
+          <button class="size-btn" data-item="alfahamPepper" data-size="Quarter" data-price="140" onclick="selectSize(this,'alfahamPepper')">Qtr ₹140</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="alfahamHoney-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Al-faham Honey Chilli <span class="note-tag">🍯</span></div>
+          <button class="add-btn" onclick="addWithSize('alfahamHoney')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="alfahamHoney" data-size="Full" data-price="570" onclick="selectSize(this,'alfahamHoney')">Full ₹570</button>
+          <button class="size-btn" data-item="alfahamHoney" data-size="Half" data-price="290" onclick="selectSize(this,'alfahamHoney')">Half ₹290</button>
+          <button class="size-btn" data-item="alfahamHoney" data-size="Quarter" data-price="150" onclick="selectSize(this,'alfahamHoney')">Qtr ₹150</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CURRIES ═══════════ -->
+<div id="curries">
+  <div class="section-header">
+    <div class="section-title">🍛 Curries</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="items-grid">
+    <div class="menu-card" id="butterChicken-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Butter Chicken</div>
+          <button class="add-btn" onclick="addWithSize('butterChicken')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="butterChicken" data-size="Full" data-price="560" onclick="selectSize(this,'butterChicken')">Full ₹560</button>
+          <button class="size-btn" data-item="butterChicken" data-size="Half" data-price="280" onclick="selectSize(this,'butterChicken')">Half ₹280</button>
+          <button class="size-btn" data-item="butterChicken" data-size="Quarter" data-price="159" onclick="selectSize(this,'butterChicken')">Qtr ₹159</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="pepperChicken-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Pepper Chicken</div>
+          <button class="add-btn" onclick="addWithSize('pepperChicken')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="pepperChicken" data-size="Full" data-price="499" onclick="selectSize(this,'pepperChicken')">Full ₹499</button>
+          <button class="size-btn" data-item="pepperChicken" data-size="Half" data-price="249" onclick="selectSize(this,'pepperChicken')">Half ₹249</button>
+          <button class="size-btn" data-item="pepperChicken" data-size="Quarter" data-price="140" onclick="selectSize(this,'pepperChicken')">Qtr ₹140</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="rumiSpecial-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Rumi's Special Chicken <span class="note-tag">CHEF'S PICK</span></div>
+          <button class="add-btn" onclick="addWithSize('rumiSpecial')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="rumiSpecial" data-size="Full" data-price="499" onclick="selectSize(this,'rumiSpecial')">Full ₹499</button>
+          <button class="size-btn" data-item="rumiSpecial" data-size="Half" data-price="249" onclick="selectSize(this,'rumiSpecial')">Half ₹249</button>
+          <button class="size-btn" data-item="rumiSpecial" data-size="Quarter" data-price="139" onclick="selectSize(this,'rumiSpecial')">Qtr ₹139</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="chickenKondattam-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Chicken Kondattam</div>
+          <button class="add-btn" onclick="addWithSize('chickenKondattam')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="chickenKondattam" data-size="Full" data-price="560" onclick="selectSize(this,'chickenKondattam')">Full ₹560</button>
+          <button class="size-btn" data-item="chickenKondattam" data-size="Half" data-price="280" onclick="selectSize(this,'chickenKondattam')">Half ₹280</button>
+          <button class="size-btn" data-item="chickenKondattam" data-size="Quarter" data-price="159" onclick="selectSize(this,'chickenKondattam')">Qtr ₹159</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="buffRoast-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Buff Roast</div>
+          <button class="add-btn" onclick="addWithSize('buffRoast')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="buffRoast" data-size="Full" data-price="589" onclick="selectSize(this,'buffRoast')">Full ₹589</button>
+          <button class="size-btn" data-item="buffRoast" data-size="Half" data-price="299" onclick="selectSize(this,'buffRoast')">Half ₹299</button>
+          <button class="size-btn" data-item="buffRoast" data-size="Quarter" data-price="159" onclick="selectSize(this,'buffRoast')">Qtr ₹159</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="buffKondattam-card">
+      <div class="card-body" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="card-name">Buff Kondattam</div>
+          <button class="add-btn" onclick="addWithSize('buffKondattam')">+</button>
+        </div>
+        <div class="size-selector">
+          <button class="size-btn selected" data-item="buffKondattam" data-size="Full" data-price="700" onclick="selectSize(this,'buffKondattam')">Full ₹700</button>
+          <button class="size-btn" data-item="buffKondattam" data-size="Half" data-price="350" onclick="selectSize(this,'buffKondattam')">Half ₹350</button>
+          <button class="size-btn" data-item="buffKondattam" data-size="Quarter" data-price="180" onclick="selectSize(this,'buffKondattam')">Qtr ₹180</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CART MODAL ═══════════ -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-sheet" id="cartSheet">
+  <div class="cart-handle"></div>
+  <div class="cart-title">📋 Your Order</div>
+  <div id="cartItems"></div>
+  <div class="cart-total">
+    <span>Total</span>
+    <span class="cart-total-amount">₹<span id="cartTotal">0</span></span>
+  </div>
+  <button class="place-btn" onclick="placeOrder()">✅ PLACE ORDER</button>
+</div>
+
+<!-- SUCCESS SCREEN -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">🎉</div>
+  <div class="success-title">Order Placed!</div>
+  <div class="success-sub">Your order has been sent to the kitchen.<br>Order number:</div>
+  <div class="success-order-id">#<span id="successOrderId"></span></div>
+  <div class="success-sub" style="color:var(--gold)">Sit back and relax 🍽️</div>
+  <button class="new-order-btn" onclick="resetOrder()">+ Add More Items</button>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif"></div>
+
+<script>
+let cart = [];
+let recognition = null;
+let isListening = false;
+let matchedSession = false;
+
+// Size selections state
+const selectedSizes = {};
+
+// ── Size selector ────────────────────────────────────────────
+function selectSize(btn, itemKey) {
+  document.querySelectorAll(`.size-btn[data-item="${itemKey}"]`)
+    .forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function getSelectedSize(itemKey) {
+  const btn = document.querySelector(`.size-btn[data-item="${itemKey}"].selected`);
+  return btn ? { size: btn.dataset.size, price: parseInt(btn.dataset.price) } : null;
+}
+
+// ── Add item functions ────────────────────────────────────────
+function addItem(name, price) {
+  cart.push({ item: name, price });
+  updateCartUI();
+  showNotif(`✅ ${name} added`);
+}
+
+function addWithSize(itemKey) {
+  const sel = getSelectedSize(itemKey);
+  if (!sel) return;
+  const nameMap = {
+    chicken65:'Chicken 65 Boneless', beefchilli:'Beef Chilli',
+    gobi65:'Gobi 65', paneer65:'Paneer 65',
+    chickenbiriyani:'Spl Chicken Dum Biriyani',
+    mandiAlfaham:'Mandi (Al-faham)', mandiShawaya:'Mandi (Shawaya)',
+    buffMandi:'Buff Mandi', muttonMandi:'Mutton Mandi',
+    shawaya:'Shawaya', masalaShawaya:'Masala Shawaya',
+    alfaham:'Al-faham', alfahamPeri:'Al-faham Peri Peri',
+    alfahamTurkish:'Al-faham Turkish', alfahamPepper:'Al-faham Pepper',
+    alfahamHoney:'Al-faham Honey Chilli',
+    butterChicken:'Butter Chicken', pepperChicken:'Pepper Chicken',
+    rumiSpecial:"Rumi's Special Chicken", chickenKondattam:'Chicken Kondattam',
+    buffRoast:'Buff Roast', buffKondattam:'Buff Kondattam',
+  };
+  const name = `${nameMap[itemKey]} (${sel.size})`;
+  cart.push({ item: name, price: sel.price });
+  updateCartUI();
+  showNotif(`✅ ${name} — ₹${sel.price}`);
+}
+
+// ── Cart UI ──────────────────────────────────────────────────
+function updateCartUI() {
+  const bar = document.getElementById('cartBar');
+  const count = document.getElementById('cartCount');
+  const barTotal = document.getElementById('cartBarTotal');
+  const total = cart.reduce((s,i) => s+i.price, 0);
+  if (cart.length > 0) {
+    bar.classList.add('visible');
+    count.textContent = cart.length;
+    barTotal.textContent = `₹${total}`;
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+function openCart() {
+  document.getElementById('cartOverlay').classList.add('open');
+  document.getElementById('cartSheet').classList.add('open');
+  renderCartItems();
+}
+function closeCart() {
+  document.getElementById('cartOverlay').classList.remove('open');
+  document.getElementById('cartSheet').classList.remove('open');
+}
+
+function renderCartItems() {
+  const el = document.getElementById('cartItems');
+  const tot = document.getElementById('cartTotal');
+  if (!cart.length) {
+    el.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">No items yet</div>';
+    tot.textContent = '0';
+    return;
+  }
+  let html = '', total = 0;
+  cart.forEach((item, i) => {
+    html += `<div class="cart-item">
+      <div class="cart-item-name">${item.item}</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="cart-item-price">₹${item.price}</div>
+        <button class="remove-btn" onclick="removeItem(${i})">✕</button>
+      </div>
+    </div>`;
+    total += item.price;
+  });
+  el.innerHTML = html;
+  tot.textContent = total;
+}
+
+function removeItem(i) {
+  cart.splice(i, 1);
+  renderCartItems();
+  updateCartUI();
+}
+
+function placeOrder() {
+  if (!cart.length) return showNotif('No items in order', true);
+  fetch('/place-order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items: cart, total: cart.reduce((s,i)=>s+i.price,0) })
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.success) {
+      closeCart();
+      document.getElementById('successOrderId').textContent = d.order_id;
+      document.getElementById('successScreen').classList.add('show');
+      cart = [];
+      updateCartUI();
+    }
+  })
+  .catch(() => showNotif('Server error', true));
+}
+
+function resetOrder() {
+  document.getElementById('successScreen').classList.remove('show');
+}
+
+// ── Notification ──────────────────────────────────────────────
+function showNotif(msg, isErr=false) {
+  const n = document.getElementById('notif');
+  n.textContent = msg;
+  n.className = 'notif show' + (isErr?' error':'');
+  clearTimeout(n._t);
+  n._t = setTimeout(() => n.className='notif', 2200);
+}
+
+// ── Category nav scroll ───────────────────────────────────────
+function scrollTo(id, pill) {
+  document.getElementById(id).scrollIntoView({ behavior:'smooth', block:'start' });
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+}
+
+// ── Voice ─────────────────────────────────────────────────────
+function initRecognition() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) return false;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 5;
+
+  recognition.onstart = () => {
+    isListening = true; matchedSession = false;
+    document.getElementById('voiceBtn').classList.add('listening');
+    document.getElementById('voiceLabel').textContent = '🔴 Listening... tap to stop';
+    showTranscript('Say an item name...', false);
+  };
+  recognition.onresult = (e) => {
+    for (let r = e.resultIndex; r < e.results.length; r++) {
+      const text = e.results[r][0].transcript.toLowerCase().trim();
+      const isFinal = e.results[r].isFinal;
+      showTranscript(`"${text}"`, isFinal);
+      if (!matchedSession && processVoice(text)) {
+        matchedSession = true;
+        recognition.stop();
+        setVoiceState('success');
+        return;
+      }
+      if (isFinal && !matchedSession) {
+        // try all alternatives
+        for (let a=0; a<e.results[r].length; a++) {
+          const alt = e.results[r][a].transcript.toLowerCase().trim();
+          if (processVoice(alt)) { matchedSession=true; recognition.stop(); setVoiceState('success'); return; }
+        }
+        setVoiceState('error');
+      }
+    }
+  };
+  recognition.onerror = (e) => {
+    isListening=false;
+    if (e.error==='not-allowed') showNotif('Mic blocked — allow in browser settings',true);
+    setVoiceState('idle');
+  };
+  recognition.onend = () => { isListening=false; if(!matchedSession) setVoiceState('idle'); };
+  return true;
+}
+
+function toggleVoice() {
+  if (!recognition && !initRecognition())
+    return showNotif('Voice not supported — use Chrome',true);
+  if (isListening) { recognition.stop(); setVoiceState('idle'); }
+  else { try { recognition.start(); } catch(e) { recognition.stop(); setTimeout(()=>recognition.start(),200); } }
+}
+
+function setVoiceState(s) {
+  const btn=document.getElementById('voiceBtn'), lbl=document.getElementById('voiceLabel');
+  btn.className='voice-btn';
+  if(s==='listening'){ btn.classList.add('listening'); lbl.textContent='🔴 Listening... tap to stop'; }
+  else if(s==='success'){ btn.classList.add('success'); lbl.textContent='✅ Added! Tap for more'; setTimeout(()=>setVoiceState('idle'),2000); }
+  else if(s==='error'){ lbl.textContent="❌ Not recognised — try again"; setTimeout(()=>setVoiceState('idle'),2000); }
+  else { lbl.textContent='🎤 Tap to speak your order'; hideTranscript(); }
+}
+function showTranscript(t,f){ const el=document.getElementById('transcript'); el.textContent=t; el.className='transcript show'+(f?' final':''); }
+function hideTranscript(){ document.getElementById('transcript').className='transcript'; }
+
+function hasPhrase(t,p){ const e=p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); return new RegExp('(?<![a-z])'+e+'(?![a-z])').test(t); }
+
+function processVoice(text) {
+  const M = [
+    // SALADS
+    {kw:['green salad'],                         fn:()=>addItem('Green Salad',100)},
+    {kw:['mediterranean salad','med salad'],      fn:()=>addItem('Mediterranean Salad',170)},
+    {kw:['chicken mayo salad','mayo salad'],      fn:()=>addItem('Chicken Mayo Salad',160)},
+    {kw:['fruit salad'],                          fn:()=>addItem('Fruit Salad',140)},
+    {kw:['russian salad'],                        fn:()=>addItem('Russian Salad',200)},
+    {kw:['cheese salad'],                         fn:()=>addItem('Cheese Salad',249)},
+    // STARTERS
+    {kw:['chicken 65','chicken sixty five'],      fn:()=>addWithSize('chicken65')},
+    {kw:['beef chilli','beef chili'],             fn:()=>addWithSize('beefchilli')},
+    {kw:['gobi 65','gobi sixty five'],            fn:()=>addWithSize('gobi65')},
+    {kw:['paneer 65','paneer sixty five'],        fn:()=>addWithSize('paneer65')},
+    {kw:['chicken dry fry','dry fry'],            fn:()=>addItem('Chicken Dry Fry',80)},
+    {kw:['hot wings','chicken wings'],            fn:()=>addItem('Hot Wings (10pc)',199)},
+    {kw:['falafel'],                              fn:()=>addItem('Falafel (4pc)',60)},
+    // BIRIYANI
+    {kw:['chicken biriyani','chicken biryani','dum biriyani'], fn:()=>addWithSize('chickenbiriyani')},
+    {kw:['buff biriyani','buff biryani'],          fn:()=>addItem('Spl Buff Biriyani',199)},
+    {kw:['ghee rice chicken','ghee chicken'],      fn:()=>addItem('Ghee Rice Chicken Combo',110)},
+    {kw:['ghee rice buff','ghee buff'],            fn:()=>addItem('Ghee Rice Buff Combo',169)},
+    {kw:['mutton biriyani','mutton biryani'],      fn:()=>addItem('Mutton Dum Biriyani',280)},
+    // BREADS
+    {kw:['porotta','parotta','kerala porotta'],    fn:()=>addItem('Kerala Porotta',20)},
+    {kw:['rumali'],                                fn:()=>addItem('Rumali',10)},
+    {kw:['tandoori'],                              fn:()=>addItem('Tandoori',10)},
+    // MANDI
+    {kw:['mandi alfaham','al faham mandi','alfaham mandi'], fn:()=>addWithSize('mandiAlfaham')},
+    {kw:['mandi shawaya','shawaya mandi'],         fn:()=>addWithSize('mandiShawaya')},
+    {kw:['buff mandi'],                            fn:()=>addWithSize('buffMandi')},
+    {kw:['mutton mandi'],                          fn:()=>addWithSize('muttonMandi')},
+    {kw:['mandi'],                                 fn:()=>addWithSize('mandiAlfaham')},
+    // ROLLS
+    {kw:['shawarma roll','chicken shawarma roll'], fn:()=>addItem('Chicken Shawarma Roll',120)},
+    {kw:['shawarma plate'],                        fn:()=>addItem('Shawarma Plate',150)},
+    {kw:['falafel roll'],                          fn:()=>addItem('Falafel Roll',120)},
+    {kw:['buff roll'],                             fn:()=>addItem('Buff Roll',180)},
+    {kw:['shawarma'],                              fn:()=>addItem('Chicken Shawarma Roll',120)},
+    // GRILL
+    {kw:['masala shawaya'],                        fn:()=>addWithSize('masalaShawaya')},
+    {kw:['peri peri','alfaham peri'],              fn:()=>addWithSize('alfahamPeri')},
+    {kw:['alfaham turkish','turkish chicken'],     fn:()=>addWithSize('alfahamTurkish')},
+    {kw:['alfaham pepper','pepper chicken grill'], fn:()=>addWithSize('alfahamPepper')},
+    {kw:['honey chilli','alfaham honey'],          fn:()=>addWithSize('alfahamHoney')},
+    {kw:['alfaham','al faham'],                    fn:()=>addWithSize('alfaham')},
+    {kw:['shawaya'],                               fn:()=>addWithSize('shawaya')},
+    // CURRIES
+    {kw:['butter chicken'],                        fn:()=>addWithSize('butterChicken')},
+    {kw:['pepper chicken'],                        fn:()=>addWithSize('pepperChicken')},
+    {kw:["rumi's special","rumi special","special chicken"], fn:()=>addWithSize('rumiSpecial')},
+    {kw:['chicken kondattam','kondattam chicken'], fn:()=>addWithSize('chickenKondattam')},
+    {kw:['buff roast'],                            fn:()=>addWithSize('buffRoast')},
+    {kw:['buff kondattam','kondattam buff'],       fn:()=>addWithSize('buffKondattam')},
+  ];
+  for (let m of M) {
+    const sorted = [...m.kw].sort((a,b)=>b.length-a.length);
+    for (let kw of sorted) {
+      if (hasPhrase(text,kw)) { m.fn(); return true; }
+    }
+  }
+  return false;
+}
+</script>
+</body>
+</html>
