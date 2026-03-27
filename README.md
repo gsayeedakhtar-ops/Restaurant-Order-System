@@ -36,7 +36,9 @@ A complete restaurant ordering system that lets customers speak their orders, wi
 
 \## 📸 Screenshots
 
-(Add screenshots here)
+!\[Order Page](screenshots/order-page.png)
+
+!\[Kitchen View](screenshots/kitchen-view.png)
 
 
 
@@ -47,4 +49,22 @@ A complete restaurant ordering system that lets customers speak their orders, wi
 \- HTML5 / CSS3
 
 \- JavaScript (Web Speech API)
+
+
+
+📄 License
+
+This project is open‑source and available under the MIT License.
+
+
+
+👤 Author
+
+Built with ❤️ by Sayeed Akhtar – a self‑taught developer who started with zero knowledge and built this using AI tools and persistence.
+
+
+
+
+
+
 
